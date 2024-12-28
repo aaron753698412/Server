@@ -1,17 +1,28 @@
 const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
-
+const axios = require('axios');
+const path = require('path');
 const app = express();
+const port = process.env.PORT || 3000;
 
-// Proxy route to another website
-app.use('/proxy', createProxyMiddleware({
-  target: 'https://www.example.com', // 이 URL을 원하는 사이트로 변경
-  changeOrigin: true,
-  pathRewrite: {
-    '^/proxy': '', // /proxy를 제거하고 요청을 전송
-  },
-}));
+// 웹 페이지 파일을 서빙하는 미들웨어
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.listen(3000, () => {
-  console.log('Proxy server is running on http://localhost:3000');
+// 프록시 요청 처리
+app.get('/proxy', async (req, res) => {
+  const url = req.query.url;
+  if (!url) {
+    return res.status(400).send('URL is required');
+  }
+
+  try {
+    const response = await axios.get(url);
+    res.send(response.data);
+  } catch (error) {
+    res.status(500).send('Error fetching the page');
+  }
+});
+
+// 서버 실행
+app.listen(port, () => {
+  console.log(`Proxy server running at http://localhost:${port}`);
 });
