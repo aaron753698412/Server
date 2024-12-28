@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proxy Browser</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    input {
+      width: 80%;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px;
+    }
+    #content {
+      margin-top: 20px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simple Proxy Browser</h1>
+  <input type="text" id="urlInput" placeholder="Enter URL (e.g., https://www.example.com)">
+  <button onclick="loadPage()">Go</button>
+
+  <div id="content"></div>
+
+  <script>
+    function loadPage() {
+      const url = document.getElementById('urlInput').value;
+      if (!url) {
+        document.getElementById('content').innerHTML = 'Please enter a valid URL';
+        return;
+      }
+
+      const proxyUrl = `http://localhost:3000/proxy?url=${encodeURIComponent(url)}`;
+      fetch(proxyUrl)
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('content').innerHTML = data;
+        })
+        .catch(error => {
+          document.getElementById('content').innerHTML = 'Error loading the page';
+        });
+    }
+  </script>
+</body>
+</html>
